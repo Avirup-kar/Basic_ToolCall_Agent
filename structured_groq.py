@@ -1,6 +1,7 @@
 import requests
 from dotenv import load_dotenv
 from pydantic import BaseModel
+import json
 import os
 
 load_dotenv()
@@ -22,6 +23,12 @@ def ask_groq(message):
         "Content-Type": "application/json"
     }
 
+    # Generate schema from Pydantic
+    schema = Person.model_json_schema()
+
+    # Groq requires this
+    schema["additionalProperties"] = False
+
     data = {
         "model": "openai/gpt-oss-20b",
         "max_tokens": 300,
@@ -29,7 +36,10 @@ def ask_groq(message):
         "messages": [
             {
                 "role": "system",
-                "content": "Extract the person's information and return it using the provided schema."
+                "content": (
+                    "Extract the person's name, age and city. "
+                    "Return the information according to the provided schema."
+                )
             },
             {
                 "role": "user",
@@ -42,7 +52,7 @@ def ask_groq(message):
             "json_schema": {
                 "name": "person",
                 "strict": True,
-                "schema": Person.model_json_schema()
+                "schema": schema
             }
         }
     }
@@ -53,6 +63,14 @@ def ask_groq(message):
         json=data
     )
 
-    result = response.json()
+    if response.status_code != 200:
+        print("Groq API Error:")
+        print(response.text)
+        return None
 
-    return result["choices"][0]["message"]["content"]
+    result = response.json()
+    
+    content = result["choices"][0]["message"]["content"]
+
+
+    return Person.model_validate(json.loads(content))
