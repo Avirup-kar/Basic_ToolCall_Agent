@@ -1,10 +1,17 @@
 import requests
 from dotenv import load_dotenv
+from pydantic import BaseModel
 import os
 
 load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+
+class Person(BaseModel):
+    name: str
+    age: int
+    city: str
 
 
 def ask_groq(message):
@@ -17,32 +24,34 @@ def ask_groq(message):
 
     data = {
         "model": "openai/gpt-oss-20b",
-
-        # Maximum number of tokens the model can generate
         "max_tokens": 300,
 
         "messages": [
             {
                 "role": "system",
-                "content": (
-                    "You are Avirup, a helpful message assistant. "
-                    "Give relevant message answers based on previous message data. "
-                    "The message is Bengali but written in English alphabet like "
-                    "this {Ami valo achi}. "
-                    "Be clear and direct. Avoid unnecessary details, long "
-                    "explanations, and repetition. Respond naturally for spoken "
-                    "conversation. If the message includes something funny, "
-                    "you can be funny as well."
-                )
+                "content": "Extract the person's information and return it using the provided schema."
             },
             {
                 "role": "user",
                 "content": message
             }
-        ]
+        ],
+
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "person",
+                "strict": True,
+                "schema": Person.model_json_schema()
+            }
+        }
     }
 
-    response = requests.post(url, headers=headers, json=data)
+    response = requests.post(
+        url,
+        headers=headers,
+        json=data
+    )
 
     result = response.json()
 
