@@ -62,7 +62,7 @@ def ask_groq(message):
     response = requests.post(
         url,
         headers=headers,
-        json=data
+        json=data,
         stream=True
     )
 
