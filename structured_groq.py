@@ -32,8 +32,6 @@ def ask_groq(message):
     data = {
         "model": "openai/gpt-oss-20b",
         "max_tokens": 300,
-        
-        "stream": True,
 
         "messages": [
             {
