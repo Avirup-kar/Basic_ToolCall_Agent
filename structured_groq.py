@@ -32,6 +32,8 @@ def ask_groq(message):
     data = {
         "model": "openai/gpt-oss-20b",
         "max_tokens": 300,
+        
+        "stream": True,
 
         "messages": [
             {
@@ -61,6 +63,7 @@ def ask_groq(message):
         url,
         headers=headers,
         json=data
+        stream=True
     )
 
     if response.status_code != 200:
