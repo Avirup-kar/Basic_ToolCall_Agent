@@ -53,3 +53,14 @@ def ask_groq(message):
 
 
     return content
+
+
+
+# 1. Define the actual Python function
+def get_weather(city: str):
+    return {
+        "city": city,
+        "temperature": 28,
+        "unit": "celsius",
+        "condition": "sunny"
+    }
