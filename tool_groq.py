@@ -81,6 +81,7 @@ def ask_groq(message):
     arguments = json.loads(tool_call["function"]["arguments"])
     
     if function_name == "get_weather":
+       print(arguments["city"])
        get_weather_result = get_weather(arguments["city"])
     
 
@@ -92,10 +93,12 @@ def ask_groq(message):
         "content": json.dumps(get_weather_result)
     })
     
+    data["messages"] = messages
+    
     response = requests.post(
             url,
             headers=headers,
-            json=messages,
+            json=data,
             stream=True
         )
     
