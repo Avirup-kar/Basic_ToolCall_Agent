@@ -38,6 +38,13 @@ def ask_groq(message):
             }
         }
     ]
+    
+    message = [
+            {
+                "role": "user",
+                "content": message
+            }
+        ],
 
     data = {
         "model": "openai/gpt-oss-20b",
@@ -45,18 +52,7 @@ def ask_groq(message):
         
         "tools": tools,
 
-        "messages": [
-            {
-                "role": "system",
-                "content": (
-                    "You are a weather assistant. Respond to the user question and use tools if needed to answer the query."
-                )
-            },
-            {
-                "role": "user",
-                "content": message
-            }
-        ],
+        "messages": message
     }
 
     response = requests.post(
@@ -70,13 +66,16 @@ def ask_groq(message):
         print("Groq API Error:")
         print(response.text)
         return None
-
-    result = response.json()
     
-    # content = result["choices"][0]["message"]["content"]
+    result = response.json()
+    res = result["choices"][0]["message"]
+    
+    tool_call = res["tool_calls"][0]
+    function_name = tool_call["function"]["name"]
+    function_id = tool_call["id"]
+    arguments = json.loads(tool_call["function"]["arguments"])
 
-
-    return result["choices"][0]["message"]
+    return 
 
 
 
