@@ -8,7 +8,14 @@ load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-
+# 1. Define the actual Python function
+def get_weather(city: str):
+    return {
+        "city": city,
+        "temperature": 28,
+        "unit": "celsius",
+        "condition": "sunny"
+    }
 
 def ask_groq(message):
     url = "https://api.groq.com/openai/v1/chat/completions"
@@ -39,12 +46,7 @@ def ask_groq(message):
         }
     ]
     
-    message = [
-            {
-                "role": "user",
-                "content": message
-            }
-        ],
+    messages = [{ "role": "user", "content": message }]
 
     data = {
         "model": "openai/gpt-oss-20b",
@@ -52,7 +54,7 @@ def ask_groq(message):
         
         "tools": tools,
 
-        "messages": message
+        "messages": messages
     }
 
     response = requests.post(
@@ -70,20 +72,39 @@ def ask_groq(message):
     result = response.json()
     res = result["choices"][0]["message"]
     
+    if "tool_calls" not in res:
+        return res["content"]
+    
     tool_call = res["tool_calls"][0]
     function_name = tool_call["function"]["name"]
     function_id = tool_call["id"]
     arguments = json.loads(tool_call["function"]["arguments"])
+    
+    if function_name == "get_weather":
+       get_weather_result = get_weather(arguments["city"])
+    
 
-    return 
+    messages.append(res)
+    messages.append({
+        "role": "tool",
+        "tool_call_id": function_id,
+        "name": "get_weather",
+        "content": json.dumps(get_weather_result)
+    })
+    
+    response = requests.post(
+            url,
+            headers=headers,
+            json=messages,
+            stream=True
+        )
+    
+    if response.status_code != 200:
+        print("Groq API Error:")
+        print(response.text)
+        return None
 
+    result = response.json()
 
+    return result["choices"][0]["message"]["content"]
 
-# 1. Define the actual Python function
-def get_weather(city: str):
-    return {
-        "city": city,
-        "temperature": 28,
-        "unit": "celsius",
-        "condition": "sunny"
-    }

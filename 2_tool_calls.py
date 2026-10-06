@@ -8,11 +8,7 @@ def call_llm():
     
     get_weather = tool_groq.get_weather(arguments["city"])
 
-    # print(function_name)
-    # print(arguments["city"])
-    # print(function_id)
-    # print(res)
-    print(get_weather)
+    print(res)
 
 
 call_llm() 
