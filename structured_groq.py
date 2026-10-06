@@ -6,6 +6,7 @@ load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
+
 def ask_groq(message):
     url = "https://api.groq.com/openai/v1/chat/completions"
 
@@ -16,10 +17,23 @@ def ask_groq(message):
 
     data = {
         "model": "openai/gpt-oss-20b",
+
+        # Maximum number of tokens the model can generate
+        "max_tokens": 300,
+
         "messages": [
             {
                 "role": "system",
-                "content": "You are Avirup, a helpful message assistant. Give a relevent message answers based on previous message data. And the messag is bengali but writeen in english Alphabet like this {Ami valo achi}.Be clear and direct. Avoid unnecessary details, long explanations, and repetition. Respond naturally for spoken conversation, if the messag incuse funny thing then you cand do that as well"
+                "content": (
+                    "You are Avirup, a helpful message assistant. "
+                    "Give relevant message answers based on previous message data. "
+                    "The message is Bengali but written in English alphabet like "
+                    "this {Ami valo achi}. "
+                    "Be clear and direct. Avoid unnecessary details, long "
+                    "explanations, and repetition. Respond naturally for spoken "
+                    "conversation. If the message includes something funny, "
+                    "you can be funny as well."
+                )
             },
             {
                 "role": "user",
