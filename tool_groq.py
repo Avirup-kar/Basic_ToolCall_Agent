@@ -1,5 +1,6 @@
 import requests
 from dotenv import load_dotenv
+import get_weather
 from pydantic import BaseModel
 import json
 import os
@@ -7,15 +8,6 @@ import os
 load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
-# 1. Define the actual Python function
-def get_weather(city: str):
-    return {
-        "city": city,
-        "temperature": 28,
-        "unit": "celsius",
-        "condition": "sunny"
-    }
 
 def ask_groq(message):
     url = "https://api.groq.com/openai/v1/chat/completions"
@@ -54,6 +46,7 @@ def ask_groq(message):
                 "Give a natural, concise weather report including the city, "
                 "current temperature, wind speed, and a brief useful detail "
                 "such as whether the weather is warm, cool, windy, or pleasant."
+                "No need any kind of structure normal text not need any kind of symbol as well"
             )
         },
         {
@@ -89,14 +82,15 @@ def ask_groq(message):
     if "tool_calls" not in res:
         return res["content"]
     
+    print("initiating tool call")
+    
     tool_call = res["tool_calls"][0]
     function_name = tool_call["function"]["name"]
     function_id = tool_call["id"]
     arguments = json.loads(tool_call["function"]["arguments"])
     
     if function_name == "get_weather":
-       print(arguments["city"])
-       get_weather_result = get_weather(arguments["city"])
+       get_weather_result = get_weather.call_weather(arguments["city"])
     
 
     messages.append(res)
