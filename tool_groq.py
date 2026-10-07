@@ -46,7 +46,21 @@ def ask_groq(message):
         }
     ]
     
-    messages = [{ "role": "user", "content": message }]
+    messages = messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are a helpful weather assistant. "
+                "Give a natural, concise weather report including the city, "
+                "current temperature, wind speed, and a brief useful detail "
+                "such as whether the weather is warm, cool, windy, or pleasant."
+            )
+        },
+        {
+            "role": "user",
+            "content": message
+        }
+    ]
 
     data = {
         "model": "openai/gpt-oss-20b",
