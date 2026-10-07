@@ -3,7 +3,8 @@ import json
 
 
 def call_llm():
-    res = tool_groq.ask_groq("What is the current weather in Bangalore?")
+    resInput = input("Enter your message to get the weather report: ")
+    res = tool_groq.ask_groq(resInput)
 
     print(res)
 
