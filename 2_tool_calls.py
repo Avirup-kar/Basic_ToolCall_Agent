@@ -1,12 +1,13 @@
 import tool_groq
+import asyncio
 import json
 
 
-def call_llm():
+async def call_llm():
     resInput = input("Enter your message to get the weather report: ")
-    res = tool_groq.ask_groq(resInput)
+    res = await tool_groq.ask_groq(resInput)
 
     print(res)
 
 
-call_llm() 
+asyncio.run(call_llm())

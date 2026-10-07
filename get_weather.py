@@ -1,5 +1,6 @@
 import requests
 from dotenv import load_dotenv
+import httpx
 import os
 
 load_dotenv()
@@ -7,7 +8,7 @@ load_dotenv()
 
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 
-def call_weather(city: str):
+async def call_weather(city: str):
     url = "https://api.weatherapi.com/v1/current.json"
 
     params = {
@@ -15,7 +16,9 @@ def call_weather(city: str):
         "q": city
     }
 
-    response = requests.get(url, params=params)
+    async with httpx.AsyncClient() as client:
+          response = await client.get(url, params=params)
+          
     data = response.json()
     
 

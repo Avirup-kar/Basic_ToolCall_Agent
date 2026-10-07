@@ -9,7 +9,7 @@ load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-def ask_groq(message):
+async def ask_groq(message):
     url = "https://api.groq.com/openai/v1/chat/completions"
 
     headers = {
@@ -90,7 +90,7 @@ def ask_groq(message):
     arguments = json.loads(tool_call["function"]["arguments"])
     
     if function_name == "get_weather":
-       get_weather_result = get_weather.call_weather(arguments["city"])
+       get_weather_result = await get_weather.call_weather(arguments["city"])
     
 
     messages.append(res)
